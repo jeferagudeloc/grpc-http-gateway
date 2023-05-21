@@ -1,0 +1,28 @@
+version: '3'
+services:
+  server:
+    build:
+      context: './src/server'
+      dockerfile: 'Dockerfile'
+    container_name: server
+    volumes:
+      - ./src/server:/usr/src/app/
+    networks:
+      - bridge
+  gateway:
+    build:
+      context: './src/gateway'
+      dockerfile: 'Dockerfile'
+    container_name: gateway
+    ports: 
+      - 9091:8080 
+    depends_on:
+      - server
+    restart: on-failure
+    volumes:
+      - ./src/client:/usr/src/app/
+    networks:
+      - bridge
+networks:
+  bridge:
+    driver: bridge
