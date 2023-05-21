@@ -1,0 +1,25 @@
+syntax="proto3";
+package user;
+option go_package=".";
+// protoc --go_out=. --go-grpc_out=require_unimplemented_servers=false:. user.proto
+
+service UserHandler {
+  rpc CreateUser (CreateUserRequest) returns (User);
+}
+
+message Profile{
+    string profileName = 1;
+}
+
+message CreateUserRequest{
+    string Email = 1;
+    string Name = 2;
+    string LastName = 3;
+    Profile Profile = 4;
+}
+
+message User{
+    int64   ID       = 1;
+	string  Title    = 2;
+	string  Content  = 3;
+}
