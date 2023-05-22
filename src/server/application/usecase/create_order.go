@@ -15,8 +15,7 @@ type (
 	}
 
 	CreateOrderInput struct {
-		OrderNumber int64            `json:"orderNumber" validate:"required"`
-		Products    []domain.Product `json:"products" validate:"required"`
+		OrderNumber int64 `json:"orderNumber" validate:"required"`
 	}
 
 	CreateOrderPresenter interface {
@@ -28,32 +27,31 @@ type (
 	}
 
 	CreateOrderInteractor struct {
-		repo       domain.OrderRepository
-		presenter  CreateOrderPresenter
-		ctxTimeout time.Duration
+		repo      domain.OrderRepository
+		presenter CreateOrderPresenter
 	}
 )
 
 func NewCreateOrderInteractor(
 	repo domain.OrderRepository,
 	presenter CreateOrderPresenter,
-	t time.Duration,
 ) CreateOrderUseCase {
 	return CreateOrderInteractor{
-		repo:       repo,
-		presenter:  presenter,
-		ctxTimeout: t,
+		repo:      repo,
+		presenter: presenter,
 	}
 }
 
 func (a CreateOrderInteractor) Execute(ctx context.Context, order CreateOrderInput) (CreateOrderOutput, error) {
 
 	orderDataToSave := domain.OrderData{
-		OrderNumber: fmt.Sprint(order.OrderNumber),
-		Products:    order.Products,
+		OrderNumber:  fmt.Sprint(order.OrderNumber),
+		CreationDate: time.Now(),
+		UpdationDate: time.Now(),
+		Status:       "idle",
 	}
 
-	orderDataSaved, err := a.repo.SaveOrder(orderDataToSave)
+	orderDataSaved, err := a.repo.SaveOrder(ctx, orderDataToSave)
 	if err != nil {
 		return a.presenter.Output(false), err
 	}
