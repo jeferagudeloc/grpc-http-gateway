@@ -6,12 +6,18 @@ import (
 	"log"
 
 	"github.com/jeferagudeloc/grpc-http-gateway/src/server/application/usecase"
-	"github.com/jeferagudeloc/grpc-http-gateway/src/server/domain"
 )
 
 type Server struct {
 	createOrderUseCase usecase.CreateOrderUseCase
 	getOrderUseCase    usecase.GetOrderUseCase
+}
+
+func NewServer(createOrderUseCase usecase.CreateOrderUseCase, getOrderUseCase usecase.GetOrderUseCase) *Server {
+	return &Server{
+		createOrderUseCase: createOrderUseCase,
+		getOrderUseCase:    getOrderUseCase,
+	}
 }
 
 func (s *Server) CreateOrder(ctx context.Context, req *CreateOrderRequest) (*Order, error) {
@@ -30,7 +36,6 @@ func (s *Server) GetOrder(ctx context.Context, req *GetOrderRequest) (*Order, er
 
 	output, err := s.getOrderUseCase.Execute(ctx, usecase.GetOrderInput{
 		OrderNumber: fmt.Sprint(req.OrderNumber),
-		Products:    make([]domain.Product, 0),
 	})
 
 	if err != nil {

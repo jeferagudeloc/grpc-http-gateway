@@ -5,14 +5,14 @@ import (
 
 	"github.com/jeferagudeloc/grpc-http-gateway/src/gateway/application/adapter/logger"
 	"github.com/jeferagudeloc/grpc-http-gateway/src/gateway/infrastructure/log"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
+	"github.com/jeferagudeloc/grpc-http-gateway/src/gateway/infrastructure/router"
 )
 
 type config struct {
 	appName    string
 	logger     logger.Logger
 	ctxTimeout time.Duration
+	webServer  router.Server
 }
 
 func NewConfig() *config {
@@ -40,14 +40,23 @@ func (c *config) Logger(instance int) *config {
 	return c
 }
 
-func (c *config) Start() {
+func (c *config) WebServer(instance int) *config {
+	s, err := router.NewWebServerFactory(
+		instance,
+		c.logger,
+		c.ctxTimeout,
+	)
 
-	var conn *grpc.ClientConn
-	conn, err := grpc.Dial("dns:///server:9000", grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
-		c.logger.Fatalln("could not connect to server: %v", err)
+		c.logger.Fatalln(err)
 	}
 
-	defer conn.Close()
+	c.logger.Infof("Successfully configured router server")
 
+	c.webServer = s
+	return c
+}
+
+func (c *config) Start() {
+	c.webServer.Listen()
 }

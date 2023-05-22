@@ -6,6 +6,7 @@ import (
 
 	"github.com/jeferagudeloc/grpc-http-gateway/src/gateway/infrastructure"
 	"github.com/jeferagudeloc/grpc-http-gateway/src/gateway/infrastructure/log"
+	"github.com/jeferagudeloc/grpc-http-gateway/src/gateway/infrastructure/router"
 	"github.com/joho/godotenv"
 )
 
@@ -15,7 +16,8 @@ func main() {
 	var app = infrastructure.NewConfig().
 		Name(os.Getenv("APP_NAME")).
 		ContextTimeout(10 * time.Second).
-		Logger(log.InstanceLogrusLogger)
+		Logger(log.InstanceLogrusLogger).
+		WebServer(router.InstanceGorillaMux)
 
 	app.Start()
 

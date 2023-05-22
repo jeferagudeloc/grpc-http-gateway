@@ -1,17 +1,19 @@
 package domain
 
+import (
+	"context"
+	"time"
+)
+
 type (
 	OrderRepository interface {
-		SaveOrder(OrderData) (OrderData, error)
-	}
-
-	Product struct {
-		SKU  string
-		Name string
+		SaveOrder(context.Context, OrderData) (OrderData, error)
 	}
 
 	OrderData struct {
-		OrderNumber string
-		Products    []Product
+		OrderNumber  string
+		CreationDate time.Time
+		UpdationDate time.Time
+		Status       string
 	}
 )

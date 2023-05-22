@@ -7,6 +7,15 @@ services:
     container_name: server
     volumes:
       - ./src/server:/usr/src/app/
+    depends_on:
+      - mysql
+    restart: on-failure
+    environment:
+      - MYSQL_HOST=mysql
+      - MYSQL_DATABASE=http_gateway_grpc
+      - MYSQL_PORT=3306
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=root
     networks:
       - bridge
   gateway:
@@ -20,7 +29,21 @@ services:
       - server
     restart: on-failure
     volumes:
-      - ./src/client:/usr/src/app/
+      - ./src/gateway:/usr/src/app/
+    networks:
+      - bridge
+  mysql:
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    hostname: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    container_name: mysql
+    ports:
+      - "3306:3306"
+    volumes:
+      - "./config/data/schemas.sql:/docker-entrypoint-initdb.d/1.sql"
+      - "./config/data/data.sql:/docker-entrypoint-initdb.d/2.sql"
     networks:
       - bridge
 networks:
