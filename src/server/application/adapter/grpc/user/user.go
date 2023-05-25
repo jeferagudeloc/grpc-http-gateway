@@ -2,13 +2,39 @@ package user
 
 import (
 	"context"
-	"log"
+
+	"github.com/google/uuid"
 )
 
 type Server struct {
 }
 
-func (s *Server) CreateUser(ctx context.Context, user *CreateUserRequest) (*User, error) {
-	log.Printf("Creating User: %v", user.Email)
-	return &User{ID: 1}, nil
+func (s *Server) GetUsers(context.Context, *GetUsersRequest) (*GetUsersResponse, error) {
+	users := []*User{
+		{
+			Id:       uuid.New().String(),
+			Name:     "John",
+			Lastname: "Doe",
+			Email:    "john.doe@example.com",
+			Status:   "Active",
+			Role: &Role{
+				Name:        "Admin",
+				Permissions: []string{"read", "write"},
+			},
+		},
+		{
+			Id:       uuid.New().String(),
+			Name:     "Jane",
+			Lastname: "Smith",
+			Email:    "jane.smith@example.com",
+			Status:   "Inactive",
+			Role: &Role{
+				Name:        "User",
+				Permissions: []string{"read"},
+			},
+		},
+	}
+	return &GetUsersResponse{
+		Users: users,
+	}, nil
 }

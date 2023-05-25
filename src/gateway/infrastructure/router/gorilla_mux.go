@@ -10,14 +10,14 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
+	"github.com/rs/cors"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
 	"github.com/jeferagudeloc/grpc-http-gateway/src/gateway/application/adapter/api/action"
 	"github.com/jeferagudeloc/grpc-http-gateway/src/gateway/application/adapter/api/middleware"
-	"github.com/jeferagudeloc/grpc-http-gateway/src/gateway/application/usecase"
-
 	"github.com/jeferagudeloc/grpc-http-gateway/src/gateway/application/adapter/logger"
+	"github.com/jeferagudeloc/grpc-http-gateway/src/gateway/application/usecase"
 	"github.com/urfave/negroni"
 )
 
@@ -43,6 +43,16 @@ func newGorillaMux(
 func (g gorillaMux) Listen() {
 	g.setAppHandlers(g.router)
 	g.middleware.UseHandler(g.router)
+
+	// Enable CORS middleware
+	c := cors.New(cors.Options{
+		AllowedOrigins: []string{"*"},
+		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders: []string{"Content-Type", "Authorization"},
+	})
+
+	// Add the CORS middleware to Negroni
+	g.middleware.UseHandler(c.Handler(g.router))
 
 	server := &http.Server{
 		ReadTimeout:  5 * time.Second,

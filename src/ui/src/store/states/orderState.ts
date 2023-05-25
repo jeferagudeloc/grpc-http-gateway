@@ -2,11 +2,10 @@ import { OrdersResponseMock } from "../../__mocks__/ordersMock";
 
 export interface Order {
   id: string;
+  orderType: string;
   store: string;
-  order: string;
-  ip: string;
-  capacity: string;
-  memory: string;
+  address: string;
+  creationDate: string;
   status: string;
 }
 

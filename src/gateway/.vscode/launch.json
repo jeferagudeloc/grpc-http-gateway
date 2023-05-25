@@ -11,6 +11,14 @@
             "mode": "auto",
             "program": "${workspaceFolder}/main.go",
             "args": [],
+        },
+        {
+            "name": "Docker Debug",
+            "type": "go",
+            "request": "attach",
+            "mode": "remote",
+            "port": 4000,
+            "host": "127.0.0.1"
         }
     ]
 }
