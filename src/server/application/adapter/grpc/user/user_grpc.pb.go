@@ -4,6 +4,8 @@
 // - protoc             v3.21.12
 // source: user.proto
 
+// protoc --go_out=. --go-grpc_out=require_unimplemented_servers=false:. user.proto
+
 package user
 
 import (
@@ -19,14 +21,14 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	UserHandler_CreateUser_FullMethodName = "/user.UserHandler/CreateUser"
+	UserHandler_GetUsers_FullMethodName = "/user.UserHandler/GetUsers"
 )
 
 // UserHandlerClient is the client API for UserHandler service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type UserHandlerClient interface {
-	CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*User, error)
+	GetUsers(ctx context.Context, in *GetUsersRequest, opts ...grpc.CallOption) (*GetUsersResponse, error)
 }
 
 type userHandlerClient struct {
@@ -37,9 +39,9 @@ func NewUserHandlerClient(cc grpc.ClientConnInterface) UserHandlerClient {
 	return &userHandlerClient{cc}
 }
 
-func (c *userHandlerClient) CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*User, error) {
-	out := new(User)
-	err := c.cc.Invoke(ctx, UserHandler_CreateUser_FullMethodName, in, out, opts...)
+func (c *userHandlerClient) GetUsers(ctx context.Context, in *GetUsersRequest, opts ...grpc.CallOption) (*GetUsersResponse, error) {
+	out := new(GetUsersResponse)
+	err := c.cc.Invoke(ctx, UserHandler_GetUsers_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -50,15 +52,15 @@ func (c *userHandlerClient) CreateUser(ctx context.Context, in *CreateUserReques
 // All implementations should embed UnimplementedUserHandlerServer
 // for forward compatibility
 type UserHandlerServer interface {
-	CreateUser(context.Context, *CreateUserRequest) (*User, error)
+	GetUsers(context.Context, *GetUsersRequest) (*GetUsersResponse, error)
 }
 
 // UnimplementedUserHandlerServer should be embedded to have forward compatible implementations.
 type UnimplementedUserHandlerServer struct {
 }
 
-func (UnimplementedUserHandlerServer) CreateUser(context.Context, *CreateUserRequest) (*User, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateUser not implemented")
+func (UnimplementedUserHandlerServer) GetUsers(context.Context, *GetUsersRequest) (*GetUsersResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUsers not implemented")
 }
 
 // UnsafeUserHandlerServer may be embedded to opt out of forward compatibility for this service.
@@ -72,20 +74,20 @@ func RegisterUserHandlerServer(s grpc.ServiceRegistrar, srv UserHandlerServer) {
 	s.RegisterService(&UserHandler_ServiceDesc, srv)
 }
 
-func _UserHandler_CreateUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateUserRequest)
+func _UserHandler_GetUsers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUsersRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UserHandlerServer).CreateUser(ctx, in)
+		return srv.(UserHandlerServer).GetUsers(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: UserHandler_CreateUser_FullMethodName,
+		FullMethod: UserHandler_GetUsers_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserHandlerServer).CreateUser(ctx, req.(*CreateUserRequest))
+		return srv.(UserHandlerServer).GetUsers(ctx, req.(*GetUsersRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -98,8 +100,8 @@ var UserHandler_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*UserHandlerServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "CreateUser",
-			Handler:    _UserHandler_CreateUser_Handler,
+			MethodName: "GetUsers",
+			Handler:    _UserHandler_GetUsers_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

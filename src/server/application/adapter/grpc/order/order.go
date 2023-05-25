@@ -2,7 +2,6 @@ package order
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/jeferagudeloc/grpc-http-gateway/src/server/application/usecase"
 )
@@ -38,17 +37,6 @@ func (s *Server) GetOrders(context context.Context, getOrdersRequest *GetOrdersR
 			CreationDate: "2022-02-02",
 			Status:       "Completed",
 		},
-	}
-
-	// Accessing the orders and their properties
-	for _, order := range orders {
-		fmt.Println("Order ID:", order.Id)
-		fmt.Println("Order Type:", order.OrderType)
-		fmt.Println("Store:", order.Store)
-		fmt.Println("Address:", order.Address)
-		fmt.Println("Creation Date:", order.CreationDate)
-		fmt.Println("Status:", order.Status)
-		fmt.Println()
 	}
 
 	return &GetOrdersResponse{
