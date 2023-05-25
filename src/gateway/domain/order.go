@@ -1,9 +1,10 @@
 package domain
 
 type Order struct {
-	OrderNumber int64 `json:"orderNumber"`
-}
-
-type OrderRequest struct {
-	OrderNumber int64 `json:"orderNumber"`
+	ID           string `json:"id"`
+	OrderType    string `json:"orderType"`
+	Store        string `json:"store"`
+	Address      string `json:"address"`
+	CreationDate string `json:"creationDate"`
+	Status       string `json:"status"`
 }
