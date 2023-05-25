@@ -3,7 +3,6 @@ package order
 import (
 	"context"
 	"fmt"
-	"log"
 
 	"github.com/jeferagudeloc/grpc-http-gateway/src/server/application/usecase"
 )
@@ -20,27 +19,39 @@ func NewServer(createOrderUseCase usecase.CreateOrderUseCase, getOrderUseCase us
 	}
 }
 
-func (s *Server) CreateOrder(ctx context.Context, req *CreateOrderRequest) (*Order, error) {
-	output, err := s.createOrderUseCase.Execute(ctx, usecase.CreateOrderInput{
-		OrderNumber: req.OrderNumber,
-	})
+func (s *Server) GetOrders(context context.Context, getOrdersRequest *GetOrdersRequest) (*GetOrdersResponse, error) {
 
-	if err != nil {
-		log.Fatalf("there was an error creating order: %v", err)
+	orders := []*Order{
+		{
+			Id:           "1",
+			OrderType:    "Type A",
+			Store:        "Store A",
+			Address:      "Address A",
+			CreationDate: "2022-01-01",
+			Status:       "Pending",
+		},
+		{
+			Id:           "2",
+			OrderType:    "Type B",
+			Store:        "Store B",
+			Address:      "Address B",
+			CreationDate: "2022-02-02",
+			Status:       "Completed",
+		},
 	}
 
-	return &Order{Content: fmt.Sprint(output.Saved)}, nil
-}
-
-func (s *Server) GetOrder(ctx context.Context, req *GetOrderRequest) (*Order, error) {
-
-	output, err := s.getOrderUseCase.Execute(ctx, usecase.GetOrderInput{
-		OrderNumber: fmt.Sprint(req.OrderNumber),
-	})
-
-	if err != nil {
-		log.Fatalf("there was an error creating order: %v", err)
+	// Accessing the orders and their properties
+	for _, order := range orders {
+		fmt.Println("Order ID:", order.Id)
+		fmt.Println("Order Type:", order.OrderType)
+		fmt.Println("Store:", order.Store)
+		fmt.Println("Address:", order.Address)
+		fmt.Println("Creation Date:", order.CreationDate)
+		fmt.Println("Status:", order.Status)
+		fmt.Println()
 	}
 
-	return &Order{Content: fmt.Sprint(output.Saved)}, nil
+	return &GetOrdersResponse{
+		Orders: orders,
+	}, nil
 }

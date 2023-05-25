@@ -15,7 +15,6 @@ import (
 
 	"github.com/jeferagudeloc/grpc-http-gateway/src/gateway/application/adapter/api/action"
 	"github.com/jeferagudeloc/grpc-http-gateway/src/gateway/application/adapter/api/middleware"
-	"github.com/jeferagudeloc/grpc-http-gateway/src/gateway/application/adapter/presenter"
 	"github.com/jeferagudeloc/grpc-http-gateway/src/gateway/application/usecase"
 
 	"github.com/jeferagudeloc/grpc-http-gateway/src/gateway/application/adapter/logger"
@@ -79,10 +78,13 @@ func (g gorillaMux) Listen() {
 func (g gorillaMux) setAppHandlers(router *mux.Router) {
 	api := router
 	api.HandleFunc("/health", action.HealthCheck).Methods(http.MethodGet)
-	api.Handle("/orders", g.buildCreateOrderAction()).Methods(http.MethodPost)
+	api.Handle("/grpc/orders", g.buildGetOrdersGrpcAction()).Methods(http.MethodGet)
+	api.Handle("/http/orders", g.buildGetOrdersGrpcAction()).Methods(http.MethodGet)
+	api.Handle("/grpc/users", g.buildGetUsersGrpcAction()).Methods(http.MethodGet)
+	api.Handle("/http/users", g.buildGetOrdersGrpcAction()).Methods(http.MethodGet)
 }
 
-func (g gorillaMux) buildCreateOrderAction() *negroni.Negroni {
+func (g gorillaMux) buildGetOrdersGrpcAction() *negroni.Negroni {
 
 	var conn *grpc.ClientConn
 	conn, err := grpc.Dial("dns:///server:9000", grpc.WithTransportCredentials(insecure.NewCredentials()))
@@ -92,13 +94,40 @@ func (g gorillaMux) buildCreateOrderAction() *negroni.Negroni {
 
 	var handler http.HandlerFunc = func(res http.ResponseWriter, req *http.Request) {
 		var (
-			uc = usecase.NewCreateOrderInteractor(
-				presenter.NewCreateOrderPresenter(),
+			uc = usecase.NewGetOrdersGrpcInteractor(
 				g.ctxTimeout,
 				g.log,
 				conn,
 			)
-			act = action.NewCreateOrderAction(uc, g.log)
+			act = action.NewGetOrdersGrpcAction(uc, g.log)
+		)
+
+		act.Execute(res, req)
+	}
+
+	return negroni.New(
+		negroni.HandlerFunc(middleware.NewLogger(g.log).Execute),
+		negroni.NewRecovery(),
+		negroni.Wrap(handler),
+	)
+}
+
+func (g gorillaMux) buildGetUsersGrpcAction() *negroni.Negroni {
+
+	var conn *grpc.ClientConn
+	conn, err := grpc.Dial("dns:///server:9000", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		g.log.Fatalln("could not connect to server: %v", err)
+	}
+
+	var handler http.HandlerFunc = func(res http.ResponseWriter, req *http.Request) {
+		var (
+			uc = usecase.NewGetUserGrpcInteractor(
+				g.ctxTimeout,
+				g.log,
+				conn,
+			)
+			act = action.NewGetUsersGrpcAction(uc, g.log)
 		)
 
 		act.Execute(res, req)

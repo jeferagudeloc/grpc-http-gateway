@@ -5,20 +5,22 @@ option go_package=".";
 // protoc --go_out=. --go-grpc_out=require_unimplemented_servers=false:. order.proto
 
 service OrderHandler {
-  rpc CreateOrder (CreateOrderRequest) returns (Order);
-  rpc GetOrder (GetOrderRequest) returns (Order);
+  rpc GetOrders (GetOrdersRequest) returns (GetOrdersResponse);
 }
 
-message CreateOrderRequest{
-    int64 orderNumber = 1;
+message GetOrdersResponse {
+  repeated Order orders = 1;
 }
 
-message GetOrderRequest{
+message GetOrdersRequest{
   int64 orderNumber = 1;
 }
 
-message Order{
-  int64   ID       = 1;
-	string  Title    = 2;
-	string  Content  = 3;
+message Order {
+  string id = 1;
+  string orderType = 2;
+  string store = 3;
+  string address = 4;
+  string creationDate = 5;
+  string status = 6;
 }
