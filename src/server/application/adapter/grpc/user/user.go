@@ -33,6 +33,17 @@ func (s *Server) GetUsers(context.Context, *GetUsersRequest) (*GetUsersResponse,
 				Permissions: []string{"read"},
 			},
 		},
+		{
+			Id:       uuid.New().String(),
+			Name:     "Johan",
+			Lastname: "Bell",
+			Email:    "johan.bell@example.com",
+			Status:   "Active",
+			Role: &Role{
+				Name:        "User",
+				Permissions: []string{"read"},
+			},
+		},
 	}
 	return &GetUsersResponse{
 		Users: users,
