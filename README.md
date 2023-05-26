@@ -48,7 +48,8 @@ docker-compose up --build
 
 ```
 
-The HTTP gateway service will be accessible at http://localhost:9091.
+The HTTP gateway service will be accessible at http://localhost:8080.
+The React app will be accessible at http://localhost:3000.
 
 
 ## Project Structure
