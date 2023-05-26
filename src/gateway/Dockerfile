@@ -1,4 +1,7 @@
 FROM golang:alpine3.14 AS build
+
+EXPOSE 8080
+
 WORKDIR /build
 COPY . .
 RUN apk add git

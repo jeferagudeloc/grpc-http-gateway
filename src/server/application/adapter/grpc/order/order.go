@@ -7,39 +7,36 @@ import (
 )
 
 type Server struct {
-	createOrderUseCase usecase.CreateOrderUseCase
-	getOrderUseCase    usecase.GetOrderUseCase
+	findOrdersUseCase usecase.FindOrdersUseCase
 }
 
-func NewServer(createOrderUseCase usecase.CreateOrderUseCase, getOrderUseCase usecase.GetOrderUseCase) *Server {
+func NewServer(findOrdersUseCase usecase.FindOrdersUseCase) *Server {
 	return &Server{
-		createOrderUseCase: createOrderUseCase,
-		getOrderUseCase:    getOrderUseCase,
+		findOrdersUseCase: findOrdersUseCase,
 	}
 }
 
 func (s *Server) GetOrders(context context.Context, getOrdersRequest *GetOrdersRequest) (*GetOrdersResponse, error) {
 
-	orders := []*Order{
-		{
-			Id:           "1",
-			OrderType:    "Type A",
-			Store:        "Store A",
-			Address:      "Address A",
-			CreationDate: "2022-01-01",
-			Status:       "Pending",
-		},
-		{
-			Id:           "2",
-			OrderType:    "Type B",
-			Store:        "Store B",
-			Address:      "Address B",
-			CreationDate: "2022-02-02",
-			Status:       "Completed",
-		},
+	orders, err := s.findOrdersUseCase.Execute(context)
+	if err != nil {
+		return nil, err
+	}
+
+	orderResponse := make([]*Order, 0)
+
+	for _, o := range orders {
+		orderResponse = append(orderResponse, &Order{
+			Id:           o.ID,
+			OrderType:    o.OrderType,
+			Store:        o.Store,
+			Address:      o.Address,
+			CreationDate: o.CreationDate,
+			Status:       o.Status,
+		})
 	}
 
 	return &GetOrdersResponse{
-		Orders: orders,
+		Orders: orderResponse,
 	}, nil
 }

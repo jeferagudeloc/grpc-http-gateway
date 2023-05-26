@@ -5,6 +5,10 @@ syntax = "proto3";
 package user;
 option go_package = ".";
 
+service UserHandler {
+  rpc GetUsers(GetUsersRequest) returns (GetUsersResponse);
+}
+
 message Role {
   string name = 1;
   repeated string permissions = 2;
@@ -23,8 +27,4 @@ message GetUsersRequest {}
 
 message GetUsersResponse {
   repeated User users = 1;
-}
-
-service UserHandler {
-  rpc GetUsers(GetUsersRequest) returns (GetUsersResponse);
 }

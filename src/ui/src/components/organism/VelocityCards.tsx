@@ -1,7 +1,7 @@
 import { Box, Button, Card, CardActions, CardContent, CardHeader, Container, Grid, Typography } from "@mui/material";
 import { useGetOrdersGrpcQuery, useGetUsersGrpcQuery, useGetOrdersHttpQuery, useGetUsersHttpQuery } from '../../store/api/grpcGatewayApi';
 import { useState } from 'react';
-
+import ReplayIcon from '@mui/icons-material/Replay';
 export interface Request {
   id: string;
   title: string;
@@ -23,12 +23,14 @@ export const VelocityCards = ({ requests: initialRequests }: VelocityCardsProps)
 
   const [requests, setRequests] = useState<Request[]>(initialRequests);
 
-  const handleFetchRequest = async (refetch: () => void, requestId: string) => {
+  const handleFetchRequest = async (refetch: () => Promise<any>, requestId: string) => {
     const startTime = new Date().getTime();
-    refetch();
-    const endTime = new Date().getTime();
-    const duration = endTime - startTime;
-    updateRequestTime(requestId, duration);
+    refetch().then((response) => {
+      const endTime = new Date().getTime();
+      const duration = endTime - startTime;
+      updateRequestTime(requestId, duration);
+    }).catch(err => console.error(err));
+    
   };
 
   const updateRequestTime = (requestId: string, duration: number) => {
@@ -53,13 +55,14 @@ export const VelocityCards = ({ requests: initialRequests }: VelocityCardsProps)
         await handleFetchRequest(fetcher.refetch, fetcher.requestId);
       }
     } else {
+      setRequests(initialRequests)
       await Promise.all(fetchers.map((fetcher) => handleFetchRequest(fetcher.refetch, fetcher.requestId)));
     }
   };
 
   return (
     <Container maxWidth="xl">
-      <Button fullWidth variant="outlined" onClick={() => fetchAll()}>
+      <Button fullWidth onClick={() => fetchAll()} variant="contained" endIcon={<ReplayIcon />}>
         Call all APIs
       </Button>
       <Grid container spacing={2} alignItems="center" paddingTop={5} justifyContent="center">
@@ -73,6 +76,8 @@ export const VelocityCards = ({ requests: initialRequests }: VelocityCardsProps)
                 sx={{
                   backgroundColor: (theme) =>
                     theme.palette.mode === "light" ? theme.palette.grey[200] : theme.palette.grey[700],
+                    borderBottom: '2px solid',
+                    borderBottomImage: 'linear-gradient(-120deg, #4285f4, #34a853, #fbbc05, #ea4335)',
                 }}
               />
               <CardContent>
@@ -85,7 +90,7 @@ export const VelocityCards = ({ requests: initialRequests }: VelocityCardsProps)
                   }}
                 >
                   <Typography component="h2" variant="h3" color="text.primary">
-                    {request.time || "-"}
+                    { request.time || "-" }
                   </Typography>
                 </Box>
                 <ul>
@@ -97,7 +102,7 @@ export const VelocityCards = ({ requests: initialRequests }: VelocityCardsProps)
                 </ul>
               </CardContent>
               <CardActions>
-                <Button fullWidth variant={request.buttonVariant} onClick={() => fetchAll(request.id)}>
+                <Button fullWidth variant={'outlined'} onClick={() => fetchAll(request.id)}>
                   {request.buttonText}
                 </Button>
               </CardActions>

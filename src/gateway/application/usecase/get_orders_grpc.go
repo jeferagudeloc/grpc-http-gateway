@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/jeferagudeloc/grpc-http-gateway/src/gateway/application/adapter/logger"
@@ -54,13 +53,9 @@ func (a GetOrdersGrpcInteractor) Execute(ctx context.Context) ([]domain.Order, e
 		})
 	}
 
-	fmt.Printf("output server: %v\n", len(output))
-
 	if err != nil {
 		a.logger.Fatalln("Error when trying to say hello: %v", err)
 	}
-
-	a.logger.Infof("response from server: %v", response)
 
 	return output, nil
 }

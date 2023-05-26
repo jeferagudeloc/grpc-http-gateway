@@ -9,12 +9,18 @@ import { requests } from './constants/requests';
 import { Provider } from 'react-redux';
 import store from "./store/store";
 
-const defaultTheme = createTheme();
+const themeLight = createTheme({
+  palette: {
+    background: {
+      default: "#E8E9E8E9"
+    }
+  }
+});
 
 export default function App() {
   return (
     <Provider store={store}>
-    <ThemeProvider theme={defaultTheme}>
+    <ThemeProvider theme={themeLight}>
       <GlobalStyles styles={{ ul: { margin: 0, padding: 0, listStyle: 'none' } }} />
       <CssBaseline />
       <ProjectDescription />

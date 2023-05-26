@@ -1,11 +1,10 @@
 package database
 
 import (
-	"context"
-	"errors"
 	"fmt"
 
-	"github.com/jeferagudeloc/grpc-http-gateway/src/server/application/adapter/model"
+	"github.com/jeferagudeloc/grpc-http-gateway/src/server/application/adapter/entity"
+	"github.com/jeferagudeloc/grpc-http-gateway/src/server/domain"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -45,6 +44,12 @@ func NewMysqlHandler(c *config) (*MysqlHandler, error) {
 
 	if err != nil {
 		fmt.Errorf("there was an error creating database", err)
+		return nil, err
+	}
+
+	err = Migration(db)
+	if err != nil {
+		fmt.Errorf("there was a migration error", err)
 	}
 
 	sqlDB.SetMaxIdleConns(5)
@@ -53,13 +58,20 @@ func NewMysqlHandler(c *config) (*MysqlHandler, error) {
 	return &MysqlHandler{db}, nil
 }
 
-func (mysqlHandler MysqlHandler) SaveOrder(ctx context.Context, orderToSave model.Order) (*model.Order, error) {
-
-	result := mysqlHandler.db.Create(&orderToSave)
-
-	if result.Error != nil {
-		return nil, errors.New("there was an error saving the order")
+func (mysqlHandler MysqlHandler) GetOrders() ([]domain.Order, error) {
+	var orders []entity.Order
+	if err := mysqlHandler.db.Find(&orders).Error; err != nil {
+		return nil, err
 	}
+	return entity.ToOrdersDomainList(orders), nil
+}
 
-	return &orderToSave, nil
+func (mysqlHandler MysqlHandler) GetUsers() ([]domain.User, error) {
+	var users []entity.User
+	err := mysqlHandler.db.Model(&entity.User{}).Preload("Role").Find(&users).Error
+	if err != nil {
+		return nil, err
+	}
+	return entity.ToUsersDomainList(users), nil
+
 }

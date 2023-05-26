@@ -19,11 +19,8 @@ These instructions will help you get the project up and running on your local ma
 
 ### Installation
 
-  
-
 1. Clone the repository:
 
-  
 
 ```shell
 
@@ -64,7 +61,7 @@ The project follows a typical directory structure:
 
 *src/gateway:* Contains the implementation of the HTTP gateway.
 
-*config/data:* Contains the SQL scripts for database initialization.
+*src/ui:* Contains the portal for test the gateway.
 
 ## Configuration
 
@@ -76,6 +73,8 @@ The project uses Docker Compose for container orchestration. The services and th
 ***gateway:*** Builds and runs the HTTP gateway service.
 
 ***mysql:*** Runs the MySQL database server.
+
+***web:*** Runs the web server
 
 The environment variables for the services can be configured in the docker-compose.yml file.
 

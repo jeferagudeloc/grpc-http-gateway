@@ -23,8 +23,10 @@ const baseQuery = fetchBaseQuery({
   baseUrl: `${API_URL}`,
   prepareHeaders: (headers: Headers) => {
     headers.set("Content-Type", "application/json");
+    headers.set('Access-Control-Allow-Origin', '*');
     return headers;
   },
+  mode: 'no-cors',
 });
 
 const confBaseQuery: BaseQueryFn<
@@ -41,6 +43,7 @@ const grpcGatewayApi = createApi({
   baseQuery: retry(confBaseQuery, {
     maxRetries: 1,
   }),
+  
   tagTypes: ["order", "user"],
   endpoints: (build) => ({
     getOrdersGrpc: build.query<Order, void>({
