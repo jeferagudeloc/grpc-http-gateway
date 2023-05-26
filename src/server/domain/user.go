@@ -1,15 +1,20 @@
 package domain
 
-import "github.com/jeferagudeloc/grpc-http-gateway/src/server/application/adapter/model"
-
 type (
 	UserRepository interface {
-		SaveUser(UserData) (model.Order, error)
+		GetUsers() ([]User, error)
 	}
 
-	UserData struct {
-		Email    string
-		Name     string
-		LastName string
+	User struct {
+		Name     string `json:"name"`
+		LastName string `json:"lastname"`
+		Email    string `json:"email"`
+		Status   string `json:"status"`
+		Role     Role   `json:"role"`
+	}
+
+	Role struct {
+		Name        string   `json:"name"`
+		Permissions []string `json:"permissions"`
 	}
 )

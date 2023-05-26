@@ -1,11 +1,8 @@
 package repository
 
-import (
-	"context"
-
-	"github.com/jeferagudeloc/grpc-http-gateway/src/server/application/adapter/model"
-)
+import "github.com/jeferagudeloc/grpc-http-gateway/src/server/domain"
 
 type SQL interface {
-	SaveOrder(context.Context, model.Order) (*model.Order, error)
+	GetOrders() ([]domain.Order, error)
+	GetUsers() ([]domain.User, error)
 }

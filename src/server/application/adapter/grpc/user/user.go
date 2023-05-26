@@ -3,49 +3,43 @@ package user
 import (
 	"context"
 
-	"github.com/google/uuid"
+	"github.com/jeferagudeloc/grpc-http-gateway/src/server/application/usecase"
 )
 
 type Server struct {
+	findUsersUseCase usecase.FindUsersUseCase
+}
+
+func NewServer(findUsersUseCase usecase.FindUsersUseCase) *Server {
+	return &Server{
+		findUsersUseCase: findUsersUseCase,
+	}
 }
 
 func (s *Server) GetUsers(context.Context, *GetUsersRequest) (*GetUsersResponse, error) {
-	users := []*User{
-		{
-			Id:       uuid.New().String(),
-			Name:     "John",
-			Lastname: "Doe",
-			Email:    "john.doe@example.com",
-			Status:   "Active",
-			Role: &Role{
-				Name:        "Admin",
-				Permissions: []string{"read", "write"},
-			},
-		},
-		{
-			Id:       uuid.New().String(),
-			Name:     "Jane",
-			Lastname: "Smith",
-			Email:    "jane.smith@example.com",
-			Status:   "Inactive",
-			Role: &Role{
-				Name:        "User",
-				Permissions: []string{"read"},
-			},
-		},
-		{
-			Id:       uuid.New().String(),
-			Name:     "Johan",
-			Lastname: "Bell",
-			Email:    "johan.bell@example.com",
-			Status:   "Active",
-			Role: &Role{
-				Name:        "User",
-				Permissions: []string{"read"},
-			},
-		},
+
+	orders, err := s.findUsersUseCase.Execute(context.Background())
+
+	if err != nil {
+		return nil, err
 	}
+
+	orderResponse := make([]*User, 0)
+
+	for _, o := range orders {
+		orderResponse = append(orderResponse, &User{
+			Name:     o.Name,
+			Lastname: o.LastName,
+			Email:    o.Email,
+			Role: &Role{
+				Name:        o.Role.Name,
+				Permissions: nil,
+			},
+			Status: o.Status,
+		})
+	}
+
 	return &GetUsersResponse{
-		Users: users,
+		Users: orderResponse,
 	}, nil
 }

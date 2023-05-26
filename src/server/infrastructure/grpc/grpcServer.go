@@ -1,4 +1,4 @@
-package server
+package grpc
 
 import (
 	"log"
@@ -9,7 +9,6 @@ import (
 	"github.com/jeferagudeloc/grpc-http-gateway/src/server/application/adapter/grpc/order"
 	"github.com/jeferagudeloc/grpc-http-gateway/src/server/application/adapter/grpc/user"
 	"github.com/jeferagudeloc/grpc-http-gateway/src/server/application/adapter/logger"
-	"github.com/jeferagudeloc/grpc-http-gateway/src/server/application/adapter/presenter"
 	"github.com/jeferagudeloc/grpc-http-gateway/src/server/application/adapter/repository"
 	"github.com/jeferagudeloc/grpc-http-gateway/src/server/application/usecase"
 )
@@ -39,22 +38,24 @@ func (s *grpcServer) Listen() {
 	grpcServer := grpc.NewServer()
 
 	var (
-		uc = usecase.NewCreateOrderInteractor(
+		ucfoi = usecase.NewFindOrdersInteractor(
 			repository.NewMysqlSQL(s.sql),
-			presenter.NewCreateOrderPresenter(),
+		)
+		ucfui = usecase.NewFindUsersInteractor(
+			repository.NewMysqlSQL(s.sql),
 		)
 	)
 
 	// server declarations
-	orderServer := order.NewServer(uc, nil)
-	userServer := user.Server{}
+	orderServer := order.NewServer(ucfoi)
+	userServer := user.NewServer(ucfui)
 
 	order.RegisterOrderHandlerServer(grpcServer, orderServer)
-	user.RegisterUserHandlerServer(grpcServer, &userServer)
-
+	user.RegisterUserHandlerServer(grpcServer, userServer)
 	if err := grpcServer.Serve(list); err != nil {
 		log.Fatalf("Failed to serve HTTP: %v", err)
 	}
+
 }
 
 type GRPCServiceHandler struct {

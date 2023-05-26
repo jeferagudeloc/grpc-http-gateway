@@ -6,7 +6,7 @@ import (
 
 	"github.com/jeferagudeloc/grpc-http-gateway/src/gateway/application/adapter/logger"
 	"github.com/jeferagudeloc/grpc-http-gateway/src/gateway/domain"
-	"google.golang.org/grpc"
+	"github.com/jeferagudeloc/grpc-http-gateway/src/gateway/infrastructure/client"
 )
 
 type (
@@ -17,22 +17,28 @@ type (
 	GetUserHttpInteractor struct {
 		ctxTimeout time.Duration
 		logger     logger.Logger
-		grpcClient *grpc.ClientConn
+		httpClient client.HttpClient
 	}
 )
 
 func NewGetUserHttpInteractor(
 	t time.Duration,
 	l logger.Logger,
-	grpcClient *grpc.ClientConn,
+	httpClient client.HttpClient,
 ) GetUsersHttpUseCase {
-	return GetUserInteractor{
+	return GetUserHttpInteractor{
 		ctxTimeout: t,
 		logger:     l,
-		grpcClient: grpcClient,
+		httpClient: httpClient,
 	}
 }
 
 func (a GetUserHttpInteractor) Execute(ctx context.Context) ([]domain.User, error) {
-	return nil, nil
+
+	output, err := a.httpClient.GetUsersFromBackend()
+	if err != nil {
+		return nil, err
+	}
+
+	return output, nil
 }
