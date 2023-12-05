@@ -1,0 +1,23 @@
+syntax="proto3";
+package brand;
+option go_package=".";
+
+// protoc --go_out=. --go-grpc_out=require_unimplemented_servers=false:. brand.proto
+
+service BrandHandler {
+  rpc GetBrands (GetBrandRequest) returns (GetBrandResponse);
+}
+
+message GetBrandResponse {
+  repeated Brand brands = 1;
+}
+
+message GetBrandRequest{
+  string brandName = 1;
+}
+
+message Brand {
+    string name = 1;
+    string status = 2;
+    string creationTime = 3;
+}
